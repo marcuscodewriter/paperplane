@@ -42,7 +42,7 @@ export const Game: FC = () => {
       <div id="gameContainer" style={{ width: '100vw', height: '100vh' }}>
         <Fragment>
         {!isLoaded && (
-          <p>Loading Application... {Math.round(loadingProgression * 100)}%</p>
+          <p style={{ color: 'white', fontSize: 30, fontWeight: 'bold'}}>Starting Jets... {Math.round(loadingProgression * 100)}%</p>
         )}
           <Unity
           devicePixelRatio={2}
