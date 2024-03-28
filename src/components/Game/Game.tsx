@@ -19,18 +19,9 @@ export const Game: FC = () => {
 
   const WebApp = useWebApp();
 
-  const importUsername = () => {
-    var user = initDataUnsafe?.user;
-    var username = "Guest"
-    if (user) {
-      if (user.username && user.username.length > 0) {
-        username = user.username;
-      } else if (user.first_name && user.first_name.length > 0) {
-        username = user.first_name;
-      }
-    }
-    sendMessage('Menu Manager', 'ReceiveTelegramUsername', username);
-    console.log(username);
+  const setupWebApp = () => {
+    WebApp.ready();
+    WebApp.expand();
 
     WebApp.onEvent('themeChanged', function() {
         document.documentElement.className = WebApp.colorScheme;
@@ -48,11 +39,29 @@ export const Game: FC = () => {
     WebApp.MainButton.show();
   }
 
+  const importUsername = () => {
+    var user = initDataUnsafe?.user;
+    var username = "Guest"
+    if (user) {
+      if (user.username && user.username.length > 0) {
+        username = user.username;
+      } else if (user.first_name && user.first_name.length > 0) {
+        username = user.first_name;
+      }
+    }
+    sendMessage('Menu Manager', 'ReceiveTelegramUsername', username);
+    console.log(username);
+  }
+
   useEffect(() => {
     if (isLoaded) {
       importUsername();
     }
   }, [isLoaded]);
+
+  useEffect(() => {
+    setupWebApp();
+  }, []);
 
   return (
     <div id="gameContainer" style={{ width: '100vw', height: '100vh' }}>
