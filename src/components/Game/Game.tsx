@@ -94,7 +94,6 @@ export const Game: FC = () => {
             backgroundColor: 'black',
             position: 'relative',
           }}>
-            // Add loading bar that fills up as the game loads
             <div style={{
               width: `${loadingProgression * 100}%`,
               height: 10,
