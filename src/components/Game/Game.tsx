@@ -1,6 +1,6 @@
-import { FC, Fragment, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { Unity, useUnityContext } from 'react-unity-webgl';
-import { useInitData } from '@vkruglikov/react-telegram-web-app';
+import { useInitData, useWebApp } from '@vkruglikov/react-telegram-web-app';
 import './Game.css';
 
 export const Game: FC = () => {
@@ -17,6 +17,8 @@ export const Game: FC = () => {
 
   const [initDataUnsafe] = useInitData();
 
+  const WebApp = useWebApp();
+
   const importUsername = () => {
     var user = initDataUnsafe?.user;
     var username = "Guest"
@@ -29,6 +31,21 @@ export const Game: FC = () => {
     }
     sendMessage('Menu Manager', 'ReceiveTelegramUsername', username);
     console.log(username);
+
+    WebApp.onEvent('themeChanged', function() {
+        document.documentElement.className = WebApp.colorScheme;
+        document.body.setAttribute('style', '--bg-color:' + WebApp.backgroundColor);
+    });
+
+    WebApp.MainButton.setParams({
+        text: 'Join Paper $PLANE'
+    });
+
+    WebApp.MainButton.onClick(function () {
+        WebApp.openTelegramLink('https://t.me/paperplane_ton');
+    });
+
+    WebApp.MainButton.show();
   }
 
   useEffect(() => {
@@ -38,20 +55,65 @@ export const Game: FC = () => {
   }, [isLoaded]);
 
   return (
-    <>
-      <div id="gameContainer" style={{ width: '100vw', height: '100vh' }}>
-        <Fragment>
-        {!isLoaded && (
-          <p style={{ textAlign: 'center', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 30, fontWeight: 'bold'}}>Starting Jets... {Math.round(loadingProgression * 100)}%</p>
-        )}
-          <Unity
-          devicePixelRatio={2}
-            id="unity-canvas"
-            unityProvider={unityProvider}
-            style={{ width: '100%', height: '100%', visibility: isLoaded ? 'visible' : 'hidden'}}
-          />
-        </Fragment>
-      </div>
-    </>
+    <div id="gameContainer" style={{ width: '100vw', height: '100vh' }}>
+      {!isLoaded && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          margin: 0,
+          height: '80%',
+          width: '100%',
+          textAlign: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <p style={{
+            color: 'white',
+            fontSize: 30,
+            fontWeight: 'bold',
+            letterSpacing: 1.4,
+          }}>
+            <i>Paper $PLANE Game</i>
+          </p>
+          <img src="./assets/loading.gif" alt="" style={{
+            borderRadius: 10,
+            marginBottom: 30,
+            marginTop: 30,
+          }}/>
+          <p style={{
+            color: 'white',
+            fontSize: 30,
+            fontWeight: 'bold',
+            letterSpacing: 1.4,
+          }}>
+            <i>Starting Jets . . . {(loadingProgression * 100).toFixed()}%</i>
+          </p>
+          <div style={{
+            width: '100%',
+            height: 10,
+            backgroundColor: 'black',
+            position: 'relative',
+          }}>
+            // Add loading bar that fills up as the game loads
+            <div style={{
+              width: `${loadingProgression * 100}%`,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: 'white',
+              position: 'absolute',
+            }} />
+          </div>
+        </div>
+      )}
+      <Unity
+        devicePixelRatio={2}
+        id="unity-canvas"
+        unityProvider={unityProvider}
+        style={{
+          width: '100%',
+          height: '100%'
+        }}
+      />
+    </div>
   );
 };
