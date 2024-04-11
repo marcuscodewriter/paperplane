@@ -86,18 +86,15 @@ export const Game: FC = () => {
   },[]);
 
   useEffect(() => {
-    addEventListener("GetPlanePrice", getPlanePrice);
+    if (isLoaded) {
+      importUsername();
+      addEventListener("GetPlanePrice", getPlanePrice);
+      getPlanePrice();
+    }
     return () => {
       removeEventListener("GetPlanePrice", getPlanePrice);
     };
-  }, [addEventListener, removeEventListener, getPlanePrice]);
-
-  useEffect(() => {
-    if (isLoaded) {
-      importUsername();
-      getPlanePrice();
-    }
-  }, [isLoaded]);
+  }, [isLoaded, addEventListener, removeEventListener, getPlanePrice]);
 
   useEffect(() => {
     setupWebApp();
