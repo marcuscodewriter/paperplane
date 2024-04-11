@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { Unity, useUnityContext } from 'react-unity-webgl';
 import { useInitData, useWebApp } from '@vkruglikov/react-telegram-web-app';
 import './Game.css';
@@ -19,7 +19,7 @@ const httpClient = new HttpClient({
 const client = new Api(httpClient);
 
 export const Game: FC = () => {
-  const { unityProvider, sendMessage, loadingProgression, isLoaded } = useUnityContext({
+  const { unityProvider, sendMessage, loadingProgression, isLoaded, addEventListener, removeEventListener } = useUnityContext({
     loaderUrl: "Build/PaperPlaneGame.loader.js",
     dataUrl: "Build/PaperPlaneGame.data",
     frameworkUrl: "Build/PaperPlaneGame.framework.js",
@@ -68,20 +68,22 @@ export const Game: FC = () => {
     console.log(username);
   }
 
-  const getPlanePrice = async () => {
-    const response = await client.rates.getRates({
+  const getPlanePrice = useCallback(() => {
+    client.rates.getRates({
       tokens: ['EQAX9J60va-0wIDMdqGLRMf7imJvG0Ytyi3Yxnq9y-nbNCq2'],
       currencies: ['USD'],
+    }).then(response => {
+      const rates = response.rates;
+      const planeRate = rates['EQAX9J60va-0wIDMdqGLRMf7imJvG0Ytyi3Yxnq9y-nbNCq2'];
+      const planePrice = planeRate.prices!['USD'].toPrecision(3);
+      const plane24hChange = planeRate.diff_24h!['USD'];
+      const message = '$PLANE\n' + planePrice + ' ' + plane24hChange;
+      console.log(message);
+      sendMessage('Menu Manager', 'ReceivePlanePrice', message);
+    }).catch(error => {
+      console.error(error);
     });
-
-    const rates = response.rates;
-    const planeRate = rates['EQAX9J60va-0wIDMdqGLRMf7imJvG0Ytyi3Yxnq9y-nbNCq2'];
-    const planePrice = planeRate.prices!['USD'].toPrecision(3);
-    const plane24hChange = planeRate.diff_24h!['USD'];
-    const message = '$PLANE\n' + planePrice + ' ' + plane24hChange;
-    console.log(message);
-    sendMessage('Menu Manager', 'ReceivePlanePrice', message);
-  }
+  },[]);
 
   useEffect(() => {
     addEventListener("GetPlanePrice", getPlanePrice);
