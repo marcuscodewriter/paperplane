@@ -32,6 +32,9 @@ dependencies:
   react-unity-webgl:
     specifier: ^9.5.1
     version: 9.5.1(react@18.2.0)
+  tonapi-sdk-js:
+    specifier: ^1.0.4
+    version: 1.0.4
 
 devDependencies:
   '@types/node':
@@ -3215,6 +3218,10 @@ packages:
     dependencies:
       is-number: 7.0.0
     dev: true
+
+  /tonapi-sdk-js@1.0.4:
+    resolution: {integrity: sha512-8Frbsu65T4s0lNzYO6Vz1Y1BHADrmYydbJi16eoKpUvzvNCOMtsurrTdpM49Tk3KdXKdz2Amwze/fMYz8XG4ww==}
+    dev: false
 
   /tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
