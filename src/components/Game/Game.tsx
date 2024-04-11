@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from "react";
+import React, { Fragment, FC, useCallback, useEffect } from "react";
 import { Unity, useUnityContext } from 'react-unity-webgl';
 import { useInitData, useWebApp } from '@vkruglikov/react-telegram-web-app';
 import './Game.css';
@@ -88,12 +88,12 @@ export const Game: FC = () => {
   useEffect(() => {
     if (isLoaded) {
       importUsername();
-      addEventListener("GetPlanePrice", getPlanePrice);
       getPlanePrice();
+      addEventListener("GetPlanePrice", getPlanePrice);
+      return () => {
+        removeEventListener("GetPlanePrice", getPlanePrice);
+      };
     }
-    return () => {
-      removeEventListener("GetPlanePrice", getPlanePrice);
-    };
   }, [isLoaded, addEventListener, removeEventListener, getPlanePrice]);
 
   useEffect(() => {
@@ -150,15 +150,17 @@ export const Game: FC = () => {
           </div>
         </div>
       )}
-      <Unity
-        devicePixelRatio={2}
-        id="unity-canvas"
-        unityProvider={unityProvider}
-        style={{
-          width: '100%',
-          height: '100%'
-        }}
-      />
+      <Fragment>
+        <Unity
+          devicePixelRatio={2}
+          id="unity-canvas"
+          unityProvider={unityProvider}
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
+        />
+      </Fragment>
     </div>
   );
 };
