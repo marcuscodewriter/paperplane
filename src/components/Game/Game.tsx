@@ -1,25 +1,10 @@
-import React, { Fragment, FC, useCallback, useEffect } from "react";
+import { Fragment, FC, useEffect } from "react";
 import { Unity, useUnityContext } from 'react-unity-webgl';
 import { useInitData, useWebApp } from '@vkruglikov/react-telegram-web-app';
 import './Game.css';
-import { HttpClient, Api } from 'tonapi-sdk-js';
-
-// Configure the HTTP client with your host and token
-const httpClient = new HttpClient({
-    baseUrl: 'https://tonapi.io/',
-    baseApiParams: {
-        headers: {
-            Authorization: `Bearer AFPRAB5I4OEEOSIAAAAM3MOBNEFKZ26MOCBM3KKID7M2R5SIRPH35ZUP76WWGIBAMW3URRQ`,
-            'Content-type': 'application/json'
-        }
-    }
-});
-
-// Initialize the API client
-const client = new Api(httpClient);
 
 export const Game: FC = () => {
-  const { unityProvider, sendMessage, loadingProgression, isLoaded, addEventListener, removeEventListener } = useUnityContext({
+  const { unityProvider, sendMessage, loadingProgression, isLoaded } = useUnityContext({
     loaderUrl: "Build/PaperPlaneGame.loader.js",
     dataUrl: "Build/PaperPlaneGame.data",
     frameworkUrl: "Build/PaperPlaneGame.framework.js",
@@ -68,33 +53,11 @@ export const Game: FC = () => {
     console.log(username);
   }
 
-  const getPlanePrice = useCallback(() => {
-    client.rates.getRates({
-      tokens: ['EQAX9J60va-0wIDMdqGLRMf7imJvG0Ytyi3Yxnq9y-nbNCq2'],
-      currencies: ['USD'],
-    }).then(response => {
-      const rates = response.rates;
-      const planeRate = rates['EQAX9J60va-0wIDMdqGLRMf7imJvG0Ytyi3Yxnq9y-nbNCq2'];
-      const planePrice = planeRate.prices!['USD'].toPrecision(3);
-      const plane24hChange = planeRate.diff_24h!['USD'];
-      const message = '$PLANE\n' + planePrice + ' ' + plane24hChange;
-      console.log(message);
-      sendMessage('Menu Manager', 'ReceivePlanePrice', message);
-    }).catch(error => {
-      console.error(error);
-    });
-  },[]);
-
   useEffect(() => {
     if (isLoaded) {
       importUsername();
-      getPlanePrice();
-      addEventListener("GetPlanePrice", getPlanePrice);
-      return () => {
-        removeEventListener("GetPlanePrice", getPlanePrice);
-      };
     }
-  }, [isLoaded, addEventListener, removeEventListener, getPlanePrice]);
+  }, [isLoaded]);
 
   useEffect(() => {
     setupWebApp();
